@@ -7,6 +7,7 @@ module.exports = function(grunt) {
     require('jit-grunt')(grunt, {
         useminPrepare: 'grunt-usemin'
     });
+	grunt.loadNpmTasks( "grunt-supervisor" );
     // Define the configuration for all the tasks
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -22,7 +23,7 @@ module.exports = function(grunt) {
         },
 
         useminPrepare: {
-            html: 'app/scripts/views/index.ejs',
+            html: 'app/sripts/views/index.html',
             options: {
                 dest: 'dist'
             }
@@ -33,7 +34,6 @@ module.exports = function(grunt) {
             options: {
                 separator: ';'
             },
-
             // dist configuration is provided by useminPrepare
             dist: {}
         },

@@ -18,7 +18,9 @@ var conString = "postgres://postgres:postgres@localhost:5432/amatyastore";
 var client = new pg.Client(conString);
 
 //Serving static files
-app.use("/public", express.static(__dirname + '../../bower_components/'));
+app.use("/public", express.static(__dirname + '/../../bower_components/'));
+console.log('the dirname variable is set to : '+ __dirname );
+console.log('the bower components variable is set to : '+ __dirname + '/../../bower_components/');
 
 // required for passport
 require('./config/passport')(passport); // pass passport for configuration

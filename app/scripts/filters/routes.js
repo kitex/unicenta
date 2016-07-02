@@ -6,11 +6,12 @@ module.exports = function(app, passport) {
     // HOME PAGE (with login links) ========
     // =====================================
     app.get('/', function(req, res) {
-        res.render('index.ejs'); // load the index.ejs file
+        res.render(__dirname +'/../views/index.ejs'); // load the index.ejs file
     });
 
 	 app.get('/chat', function(req, res) {
-        res.render('chat/chat.ejs'); // load the index.ejs file
+		 console.log(req.user)
+        res.render(__dirname +'/../views/chat/chat.ejs',{title: 'Chat', user: req.user}); // load the index.ejs file
     });
     // =====================================
     // LOGIN ===============================
@@ -19,7 +20,7 @@ module.exports = function(app, passport) {
     app.get('/login', function(req, res) {
 
         // render the page and pass in any flash data if it exists
-        res.render('login.ejs', {
+        res.render(__dirname +'/../views/login.ejs', {
             message: req.flash('loginMessage')
         });
     });
@@ -40,7 +41,7 @@ module.exports = function(app, passport) {
     app.get('/signup', function(req, res) {
 
         // render the page and pass in any flash data if it exists
-        res.render('signup.ejs', {
+        res.render(__dirname +'/../views/signup.ejs', {
             message: req.flash('signupMessage')
         });
     });
@@ -73,7 +74,7 @@ function isLoggedIn(req, res, next) {
 }
 	
     app.get('/profile', isLoggedIn, function(req, res) {
-        res.render('profile.ejs', {
+        res.render(__dirname +'/../views/profile.ejs', {
             user: req.user // get the user out of session and pass to template
         });
         console.log(req.user);

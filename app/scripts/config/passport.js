@@ -3,7 +3,7 @@
 
 
 // load all the things we need
-var LocalStrategy   = require('passport-local').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 //var pg           = require('pg');
 
@@ -12,7 +12,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 //var client = new pg.Client(conString);
 
 // load up the user model
-var User            = require('../models/user');
+var User = require('../models/user');
 
 // expose this function to our app using module.exports
 module.exports = function(passport) {
@@ -25,7 +25,7 @@ module.exports = function(passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-        console.log(user.u_id +" was seralized");
+        console.log(user.u_id + " was seralized");
         done(null, user.u_id);
     });
 
@@ -45,9 +45,9 @@ module.exports = function(passport) {
 
     passport.use('local-signup', new LocalStrategy({
             // by default, local strategy uses username and password, we will override with email
-            usernameField : 'email',
-            passwordField : 'password',
-            passReqToCallback : true // allows us to pass back the entire request to the callback
+            usernameField: 'email',
+            passwordField: 'password',
+            passReqToCallback: true // allows us to pass back the entire request to the callback
         },
         function(req, email, password, done) {
 
@@ -61,16 +61,16 @@ module.exports = function(passport) {
                 User.findOne(email, function(err, isNotAvailable, user) {
                     //console.log('userfound: ' + isNotAvailable);
                     // if there are any errors, return the error
-                    if (err){
+                    if (err) {
                         return done(err);
-					}
+                    }
                     //if (){
                     //
                     //}
 
                     // check to see if theres already a user with that email
                     if (isNotAvailable === true) {
-                        console.log(user.email +' is not available');
+                        console.log(user.email + ' is not available');
                         return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
                     } else {
                         console.log('new local user');
@@ -80,7 +80,7 @@ module.exports = function(passport) {
                         user = new User();
                         // set the user's local credentials
 
-                        user.email    = req.body.email;
+                        user.email = req.body.email;
                         user.password = req.body.password;
                         //newUser.photo = 'http://www.flippersmack.com/wp-content/uploads/2011/08/Scuba-diving.jpg';
 
@@ -93,9 +93,9 @@ module.exports = function(passport) {
                     }
 
                 });
-console.log(callback);
+                console.log(callback);
             });
-	}));
+        }));
 
 
 
@@ -107,33 +107,33 @@ console.log(callback);
 
     passport.use('local-login', new LocalStrategy({
             // by default, local strategy uses username and password, we will override with email
-            usernameField : 'email',
-            passwordField : 'password',
-            passReqToCallback : true // allows us to pass back the entire request to the callback
+            usernameField: 'email',
+            passwordField: 'password',
+            passReqToCallback: true // allows us to pass back the entire request to the callback
         },
         function(req, email, password, done) { // callback with email and password from our form
             //console.log('local strategy into login');
             // find a user whose email is the same as the forms email		
             // we are checking to see if the user trying to login already exists
-            User.findOne(email,password, function(err, user) {
+            User.findOne(email, password, function(err, isAvailable,user) {
                 // if there are any errors, return the error before anything else
-                if (err){
+                if (err) {
                     return done(err);
-				}
+                }
 
-                // if no user is found, return the message
-                if (!user.isAvailable){
-                    return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
-				}
-                // function to check if password is valid
-                if (!user.isValidPassword){
-                    return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
-				}
+                if (!isAvailable) {
+                    return done(null, false, req.flash('loginMessage', 'No user found or Incorrect Credentials.')); // req.flash is the way to set flashdata using connect-flash
+                }
+
                 // all is well, return successful user
+                var util = require('util');
+				//console.log('inspecting.. ');
+                //console.log(util.inspect(user, false, null)); 
+				user.u_id=email;
                 return done(null, user);
             });
 
-		    
+
         }));
 
     // =========================================================================
@@ -142,9 +142,9 @@ console.log(callback);
     passport.use(new FacebookStrategy({
 
             // pull in our app id and secret from our auth.js file
-            clientID        : '295897893929835',
-            clientSecret    : '016c48478907f77a428e2dfb5724edf7',
-            callbackURL     : 'http://localhost:8080/auth/facebook/callback'
+            clientID: '295897893929835',
+            clientSecret: '016c48478907f77a428e2dfb5724edf7',
+            callbackURL: 'http://localhost:8080/auth/facebook/callback'
 
         },
 
@@ -155,30 +155,36 @@ console.log(callback);
             process.nextTick(function() {
 
                 // find the user in the database based on their facebook id
-                User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
+                User.findOne({
+                    'facebook.id': profile.id
+                }, function(err, user) {
 
                     // if there is an error, stop everything and return that
                     // ie an error connecting to the database
-                    if (err)
-					{return done(err);}
+                    if (err) {
+                        return done(err);
+                    }
 
                     // if the user is found, then log them in
                     if (user) {
-						{return done(null, user); }// user found, return that user
+                        {
+                            return done(null, user);
+                        } // user found, return that user
                     } else {
                         // if there is no user found with that facebook id, create them
-                        var newUser            = new User();
+                        var newUser = new User();
 
                         // set all of the facebook information in our user model
-                        newUser.facebook.id    = profile.id; // set the users facebook id
+                        newUser.facebook.id = profile.id; // set the users facebook id
                         newUser.facebook.token = token; // we will save the token that facebook provides to the user
-                        newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                        newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
                         newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
 
                         // save our user to the database
                         newUser.save(function(err) {
-                            if (err)
-							{throw err;}
+                            if (err) {
+                                throw err;
+                            }
 
                             // if successful, return the new user
                             return done(null, newUser);
@@ -190,4 +196,4 @@ console.log(callback);
 
         }));
 
-    };
+};
