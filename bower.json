@@ -1,0 +1,26 @@
+{
+  "name": "ucdash",
+  "description": "Unicenta Dashboard",
+  "main": "",
+  "authors": [
+    "Sugandha Amatya <sugandha.amatya@ncell.com.np>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.7",
+    "bootstrap": "^3.3.6",
+    "font-awesome": "^4.6.3",
+    "bootstrap-css": "^3.3.6",
+    "socket.io-client": "^1.4.8"
+  }
+}
