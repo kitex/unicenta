@@ -29,10 +29,47 @@ module.exports = function(app, passport) {
     // app.post('/login', do all our passport stuff here);
     // process the login form
     app.post('/login', passport.authenticate('local-login', {
-        successRedirect: '/profile', // redirect to the secure profile section
+        successRedirect: '/dashlists', // redirect to the secure profile section
         failureRedirect: '/login', // redirect back to the signup page if there is an error
         failureFlash: true // allow flash messages
     }));
+	
+	app.post('/products', function(req, res) {
+
+    var results = [];
+
+    // Grab data from http request
+    var data = {text: req.body.text, complete: false};
+
+    // Get a Postgres client from the connection pool
+    pg.connect(connectionString, function(err, client, done) {
+        // Handle connection errors
+        if(err) {
+          done();
+          console.log(err);
+          return res.status(500).json({ success: false, data: err});
+        }
+
+        // SQL Query > Insert Data
+        client.query("INSERT INTO items(text, complete) values($1, $2)", [data.text, data.complete]);
+
+        // SQL Query > Select Data
+        var query = client.query("SELECT * FROM items ORDER BY id ASC");
+
+        // Stream results back one row at a time
+        query.on('row', function(row) {
+            results.push(row);
+        });
+
+        // After all data is returned, close connection and return results
+        query.on('end', function() {
+            done();
+            return res.json(results);
+        });
+
+
+    });
+});
 
     // =====================================
     // SIGNUP ==============================
@@ -79,6 +116,13 @@ function isLoggedIn(req, res, next) {
         });
         console.log(req.user);
     });
+	
+	 app.get('/dashlists', isLoggedIn, function(req, res) {
+        res.render(__dirname +'/../views/dashboards/dashlists.ejs', {
+            user: req.user // get the user out of session and pass to template
+        });
+        console.log(req.user);
+    });
 
     // =====================================
     // FACEBOOK ROUTES =====================
@@ -87,6 +131,8 @@ function isLoggedIn(req, res, next) {
     app.get('/auth/facebook', passport.authenticate('facebook', {
         scope: 'email'
     }));
+	
+	
 
     // handle the callback after facebook has authenticated the user
     app.get('/auth/facebook/callback',

@@ -1,0 +1,44 @@
+<!doctype html>
+<meta name="viewport" content="width=device-width" initial-scale="1">
+<html>
+
+<head>
+    <title>UC Dash</title>
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" type="text/css" href="/public/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/public/bootstrap/dist/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="/public/font-awesome/css/font-awesome.min.css">
+    <!-- endbuild -->
+
+    <!-- build:js scripts/main.js -->
+    <script src="/public/angular/angular.min.js"></script>
+    <script src="/public/jquery/dist/jquery.min.js"></script>
+    <script src="/public/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- endbuild -->
+	<style>
+	.navbar-collapse.in,
+	.navbar-collapse.collapsing {
+		clear: left;
+	}
+	</style>
+</head>
+
+<body>
+	
+	
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <strong style="color:white"><%= user.email %></strong>		
+        <a href="/logout" class="navbar-link">Logout</a>
+    </div>
+
+    <div class="jumbotron">      
+		<ul>
+		  <li>Sales</li>
+		  <li>Out of Stock</li>
+		  <li>Products</li>
+		</ul>
+    </div>
+
+</body>
+
+</html>
